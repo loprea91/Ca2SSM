@@ -1,0 +1,76 @@
+# The OPC calcium model (Vs is log scale)
+
+# ODES
+dC/dt=2*(fi*(v_ip3*(minf^3)*(ninf^3)*(h^3)*(Cer-C)-(v3*(C^hc3)/((k3^hc3) + (C^hc3)))+v2*(Cer-C)+(vr*w*(1+(C^3)/kb1)/(ka1/(C^4)+1+(C^3)/kb1)*(Cer-C))+Vs*soc+(Jncx_bar*ninfi*(vncx*(exp(eta*VFRT)*(Na^3)*cao-exp((eta-1)*VFRT)*(nao^3)*C)/(Kx*(1+ksat*(exp((eta-1)*VFRT)))))*x)-(v_pmca*(C^2)/((C^2)+(k_pmca^2)))))
+dCer/dt=2*(-gamma*fe*(v_ip3*(minf^3)*(ninf^3)*(h^3)*(Cer-C)-(v3*(C^hc3)/((k3^hc3) + (C^hc3)))+v2*(Cer-C)+(vr*w*(1+(C^3)/kb1)/(ka1/(C^4)+1+(C^3)/kb1)*(Cer-C))))
+dh/dt=2*((hinf-h)/(1/(a2*((d2*(ip3+d1)/(ip31+d3))+C))))
+dsoc/dt=2*((soc_inf-soc)/tau_soc)
+dw/dt=2*((winf-w)/(winf/kc))
+dx/dt=2*((xinf-x)/(0.25+tau_o/(1+(C/ktau))))
+dNa/dt=2*(-3*(Jncx_bar*ninfi*(vncx*(exp(eta*VFRT)*(Na^3)*cao-exp((eta-1)*VFRT)*(nao^3)*C)/(Kx*(1+ksat*(exp((eta-1)*VFRT)))))*x))
+
+# Algebraic equations
+hinf=(d2*(ip3+d1)/(ip31+d3))/((d2*(ip3+d1)/(ip31+d3))+C)
+minf=ip3/(ip3 + d11)
+ninf=C/(C+d5)
+
+ninfi=1/(1+(kn/C)^2)
+Kx=kmcao*(Na^3)+(kmnao^3)*C+(kmnai^3)*cao*(1+C/kmcai)+kmcai*(nao^3)*(1+(Na^3)/(kmnai^3))+(Na^3)*cao+(nao^3)*C
+VFRT=V*F/(R*Temp)
+
+soc_inf=(Ks^4)/((Ks^4)+(Cer^4))   
+
+winf=(ka/(C^4)+1+(C^3)/kb)/(1/kc+ka/(C^4)+1+(C^3)/kb)
+
+xinf=1-1/((1+(C/kca)^2)*(1+(kna/Na)^2))
+
+
+# Parameters
+par vncx = 1.4 eta=0.35 V=-80 F=96.5 R=8.314 Temp=300 cao=12 nao=14 ksat=0.25 kmcao=1.3 kmnao=97.63 kmnai=12.3 kmcai=0.0026 kn=0.1 
+par Jncx_bar=1 ccai=0.5
+par v3=120 hc3=2 k3=0.3 v2=0.5 Vs=.5
+par v_ip3=0.88 ip3=0.2 d11=0.13 d5=0.08234
+par k_pmca=0.8 v_pmca=0.6
+par vr=18 ka1=0.0192*0.45 kb1=0.2573
+par fi=0.01 gamma=9 fe=0.025
+par a2=0.2 d1=0.13 d2=1.049 d3=0.9434 ip31=0.2
+par Ks=50 tau_soc=30
+par ka=0.01920*0.45 kb=0.2573 kc=0.0571*5
+par kca=5 kna=5 tau_o=10 ktau=1
+	    
+
+# Initial Conditions.
+# C(0)=0.15
+C(0)=1.766497110562787
+# Cer(0)=14
+Cer(0)=12.76294227786822
+# h(0)=0.74
+h(0)=0.1463112920996077
+# soc(0)=0
+soc(0)=0.9957725027616942
+# w(0)=0
+w(0)=0.5615032505512972
+# x(0)=0
+x(0)=0.1597934938205869
+# Na(0)=0.001
+Na(0)=20.74174293297258
+
+# Auxiliary
+#aux cdot=fi*(v_ip3*(minf^3)*(ninf^3)*(h^3)*(Cer-C)-(v3*(C^hc3)/((k3^hc3) + (C^hc3)))+v2*(Cer-C)+(vr*w*(1+(C^3)/kb1)/(ka1/(C^4)+1+(C^3)/kb1)*(Cer-C))+Vs*soc+(Jncx_bar*ninfi*(vncx*(exp(eta*VFRT)*(Na^3)*cao-exp((eta-1)*VFRT)*(nao^3)*C)/(Kx*(1+ksat*(exp((eta-1)*VFRT)))))*x)-(v_pmca*(C^2)/((C^2)+(k_pmca^2))))
+#aux cerdot=-gamma*fe*(v_ip3*(minf^3)*(ninf^3)*(h^3)*(Cer-C)-(v3*(C^hc3)/((k3^hc3) + (C^hc3)))+v2*(Cer-C)+(vr*w*(1+(C^3)/kb1)/(ka1/(C^4)+1+(C^3)/kb1)*(Cer-C)))
+#aux hdot=(hinf-h)/(1/(a2*((d2*(ip3+d1)/(ip31+d3))+C)))
+#aux sdot=(soc_inf-soc)/tau_soc
+#aux wdot=(winf-w)/(winf/kc)
+#aux xdot=(xinf-x)/(0.25+tau_o/(1+(C/ktau)))
+#aux nadot=-3*(Jncx_bar*ninfi*(vncx*(exp(eta*VFRT)*(Na^3)*cao-exp((eta-1)*VFRT)*(nao^3)*C)/(Kx*(1+ksat*(exp((eta-1)*VFRT)))))*x)
+
+# Numerics
+@ TOTAL=250,DT=.005,xlo=0,xhi=250,ylo=-3,yhi=3
+@ NPLOT=1,XP1=t,YP1=C
+@ MAXSTOR=10000000
+@ BOUNDS=1000000
+@ dsmin=1e-5,dsmax=.1,parmin=-.5,parmax=.5,autoxmin=-.5,autoxmax=.5
+@ autoymax=.4,autoymin=-.5,Ntst=50,Nmax=20000,NPr=1000,Ds=-0.001,Dsmin=1e-05,EPSL=1e-07,Dsmax=0.05
+
+done
+
