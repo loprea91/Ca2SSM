@@ -1,4 +1,4 @@
-# The OPC calcium model (Vs is log scale)
+# The OPC calcium model
 
 # ODES
 dC/dt=2*(fi*(v_ip3*(minf^3)*(ninf^3)*(h^3)*(Cer-C)-(v3*(C^hc3)/((k3^hc3) + (C^hc3)))+v2*(Cer-C)+(vr*w*(1+(C^3)/kb1)/(ka1/(C^4)+1+(C^3)/kb1)*(Cer-C))+Vs*soc+(Jncx_bar*ninfi*(vncx*(exp(eta*VFRT)*(Na^3)*cao-exp((eta-1)*VFRT)*(nao^3)*C)/(Kx*(1+ksat*(exp((eta-1)*VFRT)))))*x)-(v_pmca*(C^2)/((C^2)+(k_pmca^2)))))
