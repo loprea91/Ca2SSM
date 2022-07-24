@@ -149,7 +149,7 @@ def SPDE_solver(ICs = [0.16, 30.0, 0.64, 0.88, 0.61, 0.12, 13.0, 0.0],  # Initia
             w[k + 1, i]     = w[k, i] + ((winf(Ca[k, i]) -w[k, i]) / (winf(Ca[k, i]) / kc)) * dt
             x[k + 1, i]     = x[k, i] + ((xinf(Ca[k, i], Na[k, i]) - x[k, i]) / (0.25 + tau_o / (1 + (Ca[k, i] / ktau)))) * dt
             Na[k + 1, i]    = Na[k, i] + (-3 * Jncx(Ca[k, i], x[k, i], Na[k, i])) * dt
-            eta_u[k + 1, i] = eta_u[k, i] + (-eta_u[k, i]/tau_c) * dt + np.sqrt(2*D/tau_c) * noise_term[k, i]
+            eta_u[k + 1, i] = eta_u[k, i] + (-eta_u[k, i]/tau_c) * dt + np.sqrt(2*D/tau_c) * np.sqrt(dt) * noise_term[k, i]
                       
     return Ca, Cer, h, s, w, x, Na, eta_u, noise_term
 
