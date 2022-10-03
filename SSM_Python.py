@@ -2,11 +2,15 @@
 import numpy as np
 from numba import jit
 
+# Error class
+class StabilityError(Exception):
+    pass
+
 @jit(nopython=True, fastmath=True)
 def SPDE_solver(ICs = [0.16, 30.0, 0.64, 0.88, 0.61, 0.12, 13.0, 0.0],  # Initial conditions
               dt = 0.01,                                        # time step
               dx = 0.01,                                        # space step
-              tmax = 900.0,                                       # total time
+              tmax = 900.0,                                     # total time
               m = 5,                                            # spatial discretizations
               tau_c = 0.01,                                     # Ornstein-Uhlenbeck time constant
               D = 0.4,                                          # Diffusion for IP3
@@ -18,25 +22,24 @@ def SPDE_solver(ICs = [0.16, 30.0, 0.64, 0.88, 0.61, 0.12, 13.0, 0.0],  # Initia
               alpha = 1.0,
               beta = 1.0,
               v_ip3 = 0.88,
+              ip3 = 0.2,
               v_pmca = 0.6,
               vncx = 1.4,
+              cao = 1.2,
+              nao = 80,
               **kwargs 
               ):      
     
     # Random seed
     np.random.seed(seed)
      
-    # Error class
-    #class StabilityError(Exception):
-    #    pass
-    
     # Simulation parameters
     tspan = np.arange(0.0,(tmax-dt),dt)       
     n = len(tspan)                                                                                
     r = rho*dt/(dx**2)
-    #if r >= 0.5:
-    #    raise StabilityError('The value rho*dt/(dx**2) must be < 0.5 to ensure numerical stability!')
-    
+    if r >= 0.5:
+        raise StabilityError('The value rho*dt/(dx**2) must be < 0.5 to ensure numerical stability!')
+      
     # Model Parameters
     eta = 0.35
     Va = -80
@@ -44,8 +47,6 @@ def SPDE_solver(ICs = [0.16, 30.0, 0.64, 0.88, 0.61, 0.12, 13.0, 0.0],  # Initia
     R = 8.314
     temp = 300
     VFRT = Va * P / (R * temp)
-    cao = 12
-    nao = 14
     ksat = 0.25
     kmcao = 1.3
     kmnao = 97.63
@@ -55,7 +56,6 @@ def SPDE_solver(ICs = [0.16, 30.0, 0.64, 0.88, 0.61, 0.12, 13.0, 0.0],  # Initia
     hc3 = 2
     k3 = 0.3
     v2 = 0.5
-    ip3 = 0.2
     d5 = 0.08234
     k_pmca = 0.8
     kb1 = 0.2573
@@ -149,9 +149,8 @@ def SPDE_solver(ICs = [0.16, 30.0, 0.64, 0.88, 0.61, 0.12, 13.0, 0.0],  # Initia
             w[k + 1, i]     = w[k, i] + ((winf(Ca[k, i]) -w[k, i]) / (winf(Ca[k, i]) / kc)) * dt
             x[k + 1, i]     = x[k, i] + ((xinf(Ca[k, i], Na[k, i]) - x[k, i]) / (0.25 + tau_o / (1 + (Ca[k, i] / ktau)))) * dt
             Na[k + 1, i]    = Na[k, i] + (-3 * Jncx(Ca[k, i], x[k, i], Na[k, i])) * dt
-            eta_u[k + 1, i] = eta_u[k, i] + (-eta_u[k, i]/tau_c) * dt + np.sqrt(2*D/tau_c) * np.sqrt(dt) * noise_term[k, i]
+            eta_u[k + 1, i] = eta_u[k, i] + (-eta_u[k, i]/tau_c) * dt + np.sqrt(2*D/tau_c) * noise_term[k, i]
                       
     return Ca, Cer, h, s, w, x, Na, eta_u, noise_term
-
     
-
+    
