@@ -75,13 +75,13 @@ def OL_solver(ICs, trange, pars):
         Jpmca = (p['v_pmca']*(Ca**2)/((Ca**2)+(p['k_pmca']**2)))
 
         # ODEs
-        Ca_dt = 2*(p['fi']*(Jip3-Jserca+Jleak+Jryr+Jsoce+Jncx-Jpmca))
-        Cer_dt = 2*(-p['gammaa']*p['fe']*(Jip3-Jserca+Jleak+Jryr))
-        h_dt = 2*((hinf-h)/(1/(p['a2']*((p['d2']*(p['ip3']+p['d1'])/(p['ip3']+p['d3']))+Ca))))
-        s_dt = 2*((soc_inf-soc)/p['tau_soc'])
-        w_dt = 2*((winf-w)/(winf/p['kc']))
-        x_dt = 2*((xinf-x)/(0.25+p['tau_o']/(1+(Ca/p['ktau']))))
-        Na_dt = 2*(-3*Jncx)
+        Ca_dt = (p['fi']*(Jip3-Jserca+Jleak+Jryr+Jsoce+Jncx-Jpmca))
+        Cer_dt = (-p['gammaa']*p['fe']*(Jip3-Jserca+Jleak+Jryr))
+        h_dt = ((hinf-h)/(1/(p['a2']*((p['d2']*(p['ip3']+p['d1'])/(p['ip3']+p['d3']))+Ca))))
+        s_dt = ((soc_inf-soc)/p['tau_soc'])
+        w_dt = ((winf-w)/(winf/p['kc']))
+        x_dt = ((xinf-x)/(0.25+p['tau_o']/(1+(Ca/p['ktau']))))
+        Na_dt = (-3*Jncx)
 
         return np.array([Ca_dt + inp, Cer_dt, h_dt, s_dt, w_dt, x_dt, Na_dt])
 
